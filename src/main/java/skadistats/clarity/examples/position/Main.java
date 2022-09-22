@@ -16,14 +16,18 @@ import skadistats.clarity.processor.runner.SimpleRunner;
 import skadistats.clarity.processor.sendtables.DTClasses;
 import skadistats.clarity.processor.sendtables.OnDTClassesComplete;
 import skadistats.clarity.source.MappedFileSource;
+import skadistats.clarity.processor.runner.Context;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
 
+
 @UsesEntities
 public class Main {
+    @Insert
+    private Context ctx;
 
     private final Logger log = LoggerFactory.getLogger(Main.class.getPackage().getClass());
 
@@ -55,7 +59,7 @@ public class Main {
                     int playerIndex = p;
                     deferredActions.add(() -> {
                         int heroHandle = lookup.getSelectedHeroHandle(e);
-                        System.out.format("Player %02d got assigned hero %d\n", playerIndex, heroHandle);
+                        System.out.format("Player %02d got assigned hero %d at %d\n", playerIndex, heroHandle, ctx.getTick());
                         Entity heroEntity = entities.getByHandle(heroHandle);
                         heroLookup[playerIndex] = new HeroLookup(heroEntity);
                     });
@@ -67,7 +71,7 @@ public class Main {
                 if (lookup == null) continue;
                 if (lookup.isPositionChanged(e, changedFieldPaths, nChangedFieldPaths)) {
                     Vector newPosition = lookup.getPosition();
-                    System.out.format("Player %02d changed position to %s\n", p, newPosition.toString());
+                    System.out.format("Player %02d changed position to %s at %f\n", p, newPosition.toString(), getRealGameTimeSeconds(entities));
                 }
             }
 
@@ -148,7 +152,7 @@ public class Main {
             return heroClass.getFieldPathForName(format("CBodyComponent.m_%s", which));
         }
 
-        private boolean isPositionChanged(Entity e, FieldPath[] changedFieldPaths, int nChangedFieldPaths) {
+        private boolean isPositionChanged(Entity e, FieldPath[] changedFieldPaths, int nChangedFieldPaths){
             if (e != heroEntity) return false;
             for (int f = 0; f < nChangedFieldPaths; f++) {
                 FieldPath changedFieldPath = changedFieldPaths[f];
@@ -177,4 +181,58 @@ public class Main {
         }
     }
 
+    public Float getRealGameTimeSeconds(Entities entities) {
+        Entity grules = entities.getByDtName("CDOTAGamerulesProxy");
+        Float gameTime = null;
+        Float startTime = null;
+        Float preGameTime = null;
+        Float transitionTime = null;
+        Float realTime = null;
+        Float TIME_EPS = new Float(0.01);
+
+        // before the match starts, there's CDOTAGamerulesProxy
+        if (grules != null) {
+            gameTime = grules.getProperty("m_pGameRules.m_fGameTime");
+
+            // before the match starts, there's no game "time"
+            if (gameTime != null) {
+                preGameTime = grules.getProperty("m_pGameRules.m_flPreGameStartTime");
+
+                // before hero picking and strategy time are finished, the
+                //  pre-game countdown is still at 0, i.e. nothing has happened
+                //  in the match
+                if (preGameTime > TIME_EPS) {
+                    startTime = grules.getProperty("m_pGameRules.m_flGameStartTime");
+
+                    // time after the clock hits 0:00
+                    if (startTime > TIME_EPS) {
+                        realTime = gameTime - startTime;
+                    }
+
+                    // between the pre-game and 0:00 time of the match, the
+                    //  transition time reflects when the match is supposed to
+                    //  start (i.e. hit 0:00 on the clock), and gives a good
+                    //  approximation of when the match will start. Up to that
+                    //  point, the start time is set to 0.
+                    else {
+                        transitionTime = grules.getProperty("m_pGameRules.m_flStateTransitionTime");
+                        realTime = gameTime - transitionTime;
+                    }
+                }
+            }
+        }
+
+        return realTime;
+    }
+
+    public String getClockTime(Entities entities) {
+        Float gameTime = getRealGameTimeSeconds(entities);
+        String clockTime = null;
+        if (gameTime != null) {
+            int minutes = (int) Math.floor(gameTime / 60.);
+            int seconds = (int) Math.round(Math.abs(gameTime % 60.));
+            clockTime = String.format("%d:%02d", minutes, seconds);
+        }
+        return clockTime;
+    }
 }
