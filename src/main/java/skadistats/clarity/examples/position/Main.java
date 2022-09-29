@@ -71,7 +71,7 @@ public class Main {
                 if (lookup == null) continue;
                 if (lookup.isPositionChanged(e, changedFieldPaths, nChangedFieldPaths)) {
                     Vector newPosition = lookup.getPosition();
-                    System.out.format("Player %02d changed position to %s at %f\n", p, newPosition.toString(), getRealGameTimeSeconds(entities));
+                    System.out.format("Player %02d %s %f\n", p, newPosition.toString(), getRealGameTimeSeconds(entities));
                 }
             }
 
