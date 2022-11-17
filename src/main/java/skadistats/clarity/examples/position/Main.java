@@ -41,12 +41,29 @@ public class Main {
     private final PlayerResourceLookup[] playerLookup = new PlayerResourceLookup[10];
     private final HeroLookup[] heroLookup = new HeroLookup[10];
     private final List<Runnable> deferredActions = new ArrayList<>();
+    private FieldPath mana;
+    private FieldPath maxMana;
 
+    private FieldPath hp;
+
+    private FieldPath xp;
+
+    private boolean isHero(Entity e) {
+        return e.getDtClass().getDtName().startsWith("CDOTA_Unit_Hero");
+    }
     @OnDTClassesComplete
     protected void onDtClassesComplete() {
         playerResourceClass = dtClasses.forDtName("CDOTA_PlayerResource");
         for (int i = 0; i < 10; i++) {
             playerLookup[i] = new PlayerResourceLookup(playerResourceClass, i);
+        }
+    }
+    private void ensureFieldPaths(Entity e) {
+        if (mana == null | hp == null | xp == null) {
+            mana = e.getDtClass().getFieldPathForName("m_flMana");
+            maxMana = e.getDtClass().getFieldPathForName("m_flMaxMana");
+            hp = e.getDtClass().getFieldPathForName("m_iHealth");
+            xp = e.getDtClass().getFieldPathForName("m_iCurrentXP");
         }
     }
 
@@ -74,7 +91,10 @@ public class Main {
                     float x = newPosition.getElement(0);
                     float y = newPosition.getElement(1);
                     float z = newPosition.getElement(2);
-                    System.out.format("Player_%02d,%f,%f,%f,%f\n", p, x,y,z, getRealGameTimeSeconds(entities));
+                    if (isHero(e)) {
+                        ensureFieldPaths(e);
+                        System.out.format("Player_%02d,%f,%f,%f,%f,%f,%d,%d\n", p, x,y,z, getRealGameTimeSeconds(entities), e.getPropertyForFieldPath(mana), e.getPropertyForFieldPath(hp), e.getPropertyForFieldPath(xp));
+                    }
                 }
             }
 
