@@ -43,10 +43,11 @@ public class Main {
     private final List<Runnable> deferredActions = new ArrayList<>();
     private FieldPath mana;
     private FieldPath maxMana;
-
     private FieldPath hp;
-
     private FieldPath xp;
+    private FieldPath lvl;
+    private FieldPath manaRegen;
+    private FieldPath hpRegen;
 
     private boolean isHero(Entity e) {
         return e.getDtClass().getDtName().startsWith("CDOTA_Unit_Hero");
@@ -59,11 +60,14 @@ public class Main {
         }
     }
     private void ensureFieldPaths(Entity e) {
-        if (mana == null | hp == null | xp == null) {
+        if (mana == null | hp == null | xp == null | lvl == null | manaRegen == null | hpRegen == null) {
             mana = e.getDtClass().getFieldPathForName("m_flMana");
             maxMana = e.getDtClass().getFieldPathForName("m_flMaxMana");
             hp = e.getDtClass().getFieldPathForName("m_iHealth");
             xp = e.getDtClass().getFieldPathForName("m_iCurrentXP");
+            lvl = e.getDtClass().getFieldPathForName("m_iCurrentLevel");
+            manaRegen = e.getDtClass().getFieldPathForName("m_flManaRegen");
+            hpRegen = e.getDtClass().getFieldPathForName("m_flHealthRegen");
         }
     }
 
@@ -93,7 +97,7 @@ public class Main {
                     float z = newPosition.getElement(2);
                     if (isHero(e)) {
                         ensureFieldPaths(e);
-                        System.out.format("Player_%02d,%f,%f,%f,%f,%f,%d,%d\n", p, x,y,z, getRealGameTimeSeconds(entities), e.getPropertyForFieldPath(mana), e.getPropertyForFieldPath(hp), e.getPropertyForFieldPath(xp));
+                        System.out.format("Player_%02d,%f,%f,%f,%f,%f,%d,%d,%d,%f,%f\n", p, x,y,z, getRealGameTimeSeconds(entities), e.getPropertyForFieldPath(mana), e.getPropertyForFieldPath(hp), e.getPropertyForFieldPath(xp), e.getPropertyForFieldPath(lvl), e.getPropertyForFieldPath(manaRegen), e.getPropertyForFieldPath(hpRegen));
                     }
                 }
             }
