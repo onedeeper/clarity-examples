@@ -98,7 +98,7 @@ public class Main {
                     float z = newPosition.getElement(2);
                     if (isHero(e)) {
                         ensureFieldPaths(e);
-                        System.out.format("Player_%02d,%f,%f,%f,%f,%f,%d,%d,%d,%f,%f,%d\n", p, x,y,z,
+                        System.out.format("Player_%02d,%f,%f,%f,%f,%f,%d,%d,%d,%f,%f\n", p, x,y,z,
                                 getRealGameTimeSeconds(entities),
                                 e.getPropertyForFieldPath(mana),
                                 e.getPropertyForFieldPath(hp),
