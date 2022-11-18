@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import skadistats.clarity.event.Insert;
 import skadistats.clarity.io.Util;
+import skadistats.clarity.io.s2.Field;
 import skadistats.clarity.model.DTClass;
 import skadistats.clarity.model.Entity;
 import skadistats.clarity.model.FieldPath;
@@ -60,7 +61,7 @@ public class Main {
         }
     }
     private void ensureFieldPaths(Entity e) {
-        if (mana == null | hp == null | xp == null | lvl == null | manaRegen == null | hpRegen == null) {
+        if (mana == null | hp == null | xp == null | lvl == null | manaRegen == null | hpRegen == null| maxMana == null) {
             mana = e.getDtClass().getFieldPathForName("m_flMana");
             maxMana = e.getDtClass().getFieldPathForName("m_flMaxMana");
             hp = e.getDtClass().getFieldPathForName("m_iHealth");
@@ -97,7 +98,14 @@ public class Main {
                     float z = newPosition.getElement(2);
                     if (isHero(e)) {
                         ensureFieldPaths(e);
-                        System.out.format("Player_%02d,%f,%f,%f,%f,%f,%d,%d,%d,%f,%f\n", p, x,y,z, getRealGameTimeSeconds(entities), e.getPropertyForFieldPath(mana), e.getPropertyForFieldPath(hp), e.getPropertyForFieldPath(xp), e.getPropertyForFieldPath(lvl), e.getPropertyForFieldPath(manaRegen), e.getPropertyForFieldPath(hpRegen));
+                        System.out.format("Player_%02d,%f,%f,%f,%f,%f,%d,%d,%d,%f,%f,%d\n", p, x,y,z,
+                                getRealGameTimeSeconds(entities),
+                                e.getPropertyForFieldPath(mana),
+                                e.getPropertyForFieldPath(hp),
+                                e.getPropertyForFieldPath(xp),
+                                e.getPropertyForFieldPath(lvl),
+                                e.getPropertyForFieldPath(manaRegen),
+                                e.getPropertyForFieldPath(hpRegen));
                     }
                 }
             }
