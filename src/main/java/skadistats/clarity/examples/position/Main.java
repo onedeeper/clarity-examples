@@ -50,6 +50,15 @@ public class Main {
     private FieldPath manaRegen;
     private FieldPath hpRegen;
 
+    private FieldPath strength;
+
+    private FieldPath maxHp;
+
+    private FieldPath intel;
+
+    private FieldPath agility;
+
+
     private boolean isHero(Entity e) {
         return e.getDtClass().getDtName().startsWith("CDOTA_Unit_Hero");
     }
@@ -61,14 +70,18 @@ public class Main {
         }
     }
     private void ensureFieldPaths(Entity e) {
-        if (mana == null | hp == null | xp == null | lvl == null | manaRegen == null | hpRegen == null| maxMana == null) {
+        if (mana == null | hp == null | xp == null | lvl == null | manaRegen == null | hpRegen == null| maxMana == null | strength == null | maxHp == null | intel == null | agility == null) {
             mana = e.getDtClass().getFieldPathForName("m_flMana");
             maxMana = e.getDtClass().getFieldPathForName("m_flMaxMana");
             hp = e.getDtClass().getFieldPathForName("m_iHealth");
+            maxHp = e.getDtClass().getFieldPathForName("m_iMaxHealth");
             xp = e.getDtClass().getFieldPathForName("m_iCurrentXP");
             lvl = e.getDtClass().getFieldPathForName("m_iCurrentLevel");
-            manaRegen = e.getDtClass().getFieldPathForName("m_flManaRegen");
-            hpRegen = e.getDtClass().getFieldPathForName("m_flHealthRegen");
+            manaRegen = e.getDtClass().getFieldPathForName("m_flManaThinkRegen");
+            hpRegen = e.getDtClass().getFieldPathForName("m_flHealthThinkRegen");
+            strength = e.getDtClass().getFieldPathForName("m_flStrengthTotal");
+            intel = e.getDtClass().getFieldPathForName("m_flIntellectTotal");
+            agility = e.getDtClass().getFieldPathForName("m_flAgilityTotal");
         }
     }
 
@@ -98,14 +111,19 @@ public class Main {
                     float z = newPosition.getElement(2);
                     if (isHero(e)) {
                         ensureFieldPaths(e);
-                        System.out.format("Player_%02d,%f,%f,%f,%f,%f,%d,%d,%d,%f,%f\n", p, x,y,z,
+                        System.out.format("Player_%02d,%f,%f,%f,%f,%f,%f,%f,%d,%f,%d,%d,%d,%f,%f,%f\n", p, x,y,z,
                                 getRealGameTimeSeconds(entities),
                                 e.getPropertyForFieldPath(mana),
+                                e.getPropertyForFieldPath(manaRegen),
+                                e.getPropertyForFieldPath(maxMana),
                                 e.getPropertyForFieldPath(hp),
+                                e.getPropertyForFieldPath(hpRegen),
+                                e.getPropertyForFieldPath(maxHp),
                                 e.getPropertyForFieldPath(xp),
                                 e.getPropertyForFieldPath(lvl),
-                                e.getPropertyForFieldPath(manaRegen),
-                                e.getPropertyForFieldPath(hpRegen));
+                                e.getPropertyForFieldPath(strength),
+                                e.getPropertyForFieldPath(intel),
+                                e.getPropertyForFieldPath(agility));
                     }
                 }
             }
