@@ -1,6 +1,6 @@
-# Clarity-examples
+# Modified Version of Clarity-examples
 
-This project contains example code for the [clarity replay parser](https://github.com/skadistats/clarity).
+This repository contains example code for the [clarity replay parser](https://github.com/skadistats/clarity) modified for the purposes of the [observer](https://github.com/onedeeper/observer) dota 2 replay application
 
 ## Introduction
 
