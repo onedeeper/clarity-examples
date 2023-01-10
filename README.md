@@ -1,6 +1,6 @@
 # Modified Version of Clarity-examples
 
-### This repository contains example code for the [clarity replay parser](https://github.com/skadistats/clarity) modified for the purposes of the [observer](https://github.com/onedeeper/observer) dota 2 replay application. Specifically the "position" has been subject to surgery.
+### This repository contains example code for the [clarity replay parser](https://github.com/skadistats/clarity) modified for the purposes of the [observer](https://github.com/onedeeper/observer) dota 2 replay application. Specifically the "position" package has been subject to surgery. Below is the original readme data from clarity.
 
 ## Introduction
 
